@@ -75,6 +75,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build application
+        run: pnpm run build
+
+      - name: Start server
+        run: pnpm run start &
+
+      - name: Wait for server to start
+        run: npx wait-on http://localhost:3000
+
       - name: Run k6 local test
         uses: grafana/k6-action@v0.3.1
         with:
