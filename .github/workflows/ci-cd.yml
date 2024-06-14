@@ -16,22 +16,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Cache pnpm store
-        id: pnpm-cache
+      - name: Cache dependencies
+        id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
+          path: ./node_modules
+          key: modules-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Configure pnpm store
-        run: pnpm config set store-dir ~/.pnpm-store
-
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: pnpm install
 
       - name: Run ESLint
@@ -45,19 +41,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restore pnpm store cache
+      - name: Restore cache dependencies
+        id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.pnpm-store
-          key: ${{ needs.static-code-analysis.outputs['pnpm-cache'] }}
+          path: ./node_modules
+          key: modules-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Configure pnpm store
-        run: pnpm config set store-dir ~/.pnpm-store
-
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: pnpm install
 
       - name: Build application
@@ -80,19 +75,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restore pnpm store cache
+      - name: Restore cache dependencies
+        id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.pnpm-store
-          key: ${{ needs.static-code-analysis.outputs['pnpm-cache'] }}
+          path: ./node_modules
+          key: modules-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Configure pnpm store
-        run: pnpm config set store-dir ~/.pnpm-store
-
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: pnpm install
 
       - name: Build application
@@ -118,19 +112,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restore pnpm store cache
+      - name: Restore cache dependencies
+        id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.pnpm-store
-          key: ${{ needs.static-code-analysis.outputs['pnpm-cache'] }}
+          path: ./node_modules
+          key: modules-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Configure pnpm store
-        run: pnpm config set store-dir ~/.pnpm-store
-
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: pnpm install
 
       - name: Set up Node.js
@@ -151,17 +144,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restore pnpm store cache
+      - name: Restore cache dependencies
+        id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.pnpm-store
-          key: ${{ needs.static-code-analysis.outputs['pnpm-cache'] }}
+          path: ./node_modules
+          key: modules-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Configure pnpm store
-        run: pnpm config set store-dir ~/.pnpm-store
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: pnpm install
 
       - name: Generate Cypress testing report
         run: npx mochawesome-merge "cypress/reports/*.json" > report.json && npx marge report.json --reportFilename "testing_report" --reportTitle "Cypress Report" --reportPageTitle "Cypress Report"
@@ -197,17 +192,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restore pnpm store cache
+      - name: Restore cache dependencies
+        id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.pnpm-store
-          key: ${{ needs.static-code-analysis.outputs['pnpm-cache'] }}
+          path: ./node_modules
+          key: modules-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Configure pnpm store
-        run: pnpm config set store-dir ~/.pnpm-store
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: pnpm install
 
       - name: Upload test results to Test Management Tool
         run: |
@@ -222,17 +219,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restore pnpm store cache
+      - name: Restore cache dependencies
+        id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.pnpm-store
-          key: ${{ needs.static-code-analysis.outputs['pnpm-cache'] }}
+          path: ./node_modules
+          key: modules-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Configure pnpm store
-        run: pnpm config set store-dir ~/.pnpm-store
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: pnpm install
 
       - name: Deploy to production
         run: pnpm run deploy
