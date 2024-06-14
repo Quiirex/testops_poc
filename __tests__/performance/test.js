@@ -1,5 +1,5 @@
 import http from 'k6/http';
 
 export default function () {
-  http.get('http://localhost:3000/app');
+  http.get('http://127.0.0.1:3000/app');
 }
