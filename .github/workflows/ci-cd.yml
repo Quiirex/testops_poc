@@ -72,19 +72,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: test-automation
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install k6
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y k6
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Run k6 performance tests
-        run: pnpm run performance
+      - name: Run k6 local test
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: __tests__/performance/test.js
+          flags: --vus 50 --duration 10s
 
   security-testing:
     name: Security Testing
