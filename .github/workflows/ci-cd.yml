@@ -19,16 +19,16 @@ jobs:
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: ~/.pnpm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Run ESLint
-        run: npm run lint
+        run: pnpm run lint
 
   test-automation:
     name: Test Automation
@@ -41,19 +41,19 @@ jobs:
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: ~/.pnpm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Build application
-        run: npm run build
+        run: pnpm run build
 
       - name: Start server
-        run: npm run start &
+        run: pnpm run start &
 
       - name: Wait for server to start
         run: npx wait-on http://localhost:3000
@@ -121,7 +121,7 @@ jobs:
       - name: Generate consolidated report
         run: |
           # Assuming you have a script or tool to merge different test reports
-          npm run generate-consolidated-report
+          pnpm run generate-consolidated-report
 
       - name: Upload consolidated report
         uses: actions/upload-artifact@v3
@@ -151,4 +151,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy to production
-        run: npm run deploy
+        run: pnpm run deploy
