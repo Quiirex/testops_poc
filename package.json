@@ -6,8 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
     "db-server": "json-server ./src/data/db.json",
+    "lint": "eslint 'src/**/*.{js,ts,tsx}'",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run --e2e",
     "test": "next build && next start & wait-on http://localhost:3000 && cypress run --reporter mochawesome"
