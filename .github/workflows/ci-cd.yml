@@ -17,18 +17,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Cache pnpm store
-        id: cache-pnpm
+        id: pnpm-cache
         uses: actions/cache@v3
         with:
           path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-pnpm-
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Configure pnpm to use store
+      - name: Configure pnpm store
         run: pnpm config set store-dir ~/.pnpm-store
 
       - name: Install dependencies
@@ -45,16 +45,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restore pnpm store
+      - name: Restore pnpm store cache
         uses: actions/cache@v3
         with:
           path: ~/.pnpm-store
-          key: ${{ needs.static-code-analysis.outputs.cache-pnpm }}
+          key: ${{ needs.static-code-analysis.outputs['pnpm-cache'] }}
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Configure pnpm to use store
+      - name: Configure pnpm store
         run: pnpm config set store-dir ~/.pnpm-store
 
       - name: Install dependencies
@@ -80,16 +80,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restore pnpm store
+      - name: Restore pnpm store cache
         uses: actions/cache@v3
         with:
           path: ~/.pnpm-store
-          key: ${{ needs.static-code-analysis.outputs.cache-pnpm }}
+          key: ${{ needs.static-code-analysis.outputs['pnpm-cache'] }}
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Configure pnpm to use store
+      - name: Configure pnpm store
         run: pnpm config set store-dir ~/.pnpm-store
 
       - name: Install dependencies
@@ -118,25 +118,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restore pnpm store
+      - name: Restore pnpm store cache
         uses: actions/cache@v3
         with:
           path: ~/.pnpm-store
-          key: ${{ needs.static-code-analysis.outputs.cache-pnpm }}
+          key: ${{ needs.static-code-analysis.outputs['pnpm-cache'] }}
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Configure pnpm store
+        run: pnpm config set store-dir ~/.pnpm-store
+
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '16'
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Configure pnpm to use store
-        run: pnpm config set store-dir ~/.pnpm-store
-
-      - name: Install dependencies
-        run: pnpm install
 
       - name: Install OWASP ZAP
         uses: zaproxy/action-full-scan@v0.5.0
@@ -151,16 +151,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restore pnpm store
+      - name: Restore pnpm store cache
         uses: actions/cache@v3
         with:
           path: ~/.pnpm-store
-          key: ${{ needs.static-code-analysis.outputs.cache-pnpm }}
+          key: ${{ needs.static-code-analysis.outputs['pnpm-cache'] }}
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Configure pnpm to use store
+      - name: Configure pnpm store
         run: pnpm config set store-dir ~/.pnpm-store
 
       - name: Generate Cypress testing report
@@ -180,6 +180,7 @@ jobs:
 
       - name: Generate consolidated report
         run: |
+          # Assuming you have a script or tool to merge different test reports
           pnpm run generate-consolidated-report
 
       - name: Upload consolidated report
@@ -196,20 +197,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restore pnpm store
+      - name: Restore pnpm store cache
         uses: actions/cache@v3
         with:
           path: ~/.pnpm-store
-          key: ${{ needs.static-code-analysis.outputs.cache-pnpm }}
+          key: ${{ needs.static-code-analysis.outputs['pnpm-cache'] }}
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Configure pnpm to use store
+      - name: Configure pnpm store
         run: pnpm config set store-dir ~/.pnpm-store
 
       - name: Upload test results to Test Management Tool
         run: |
+          # Replace with actual commands to upload to your test management tool
           curl -X POST -H "Content-Type: application/json" -d @path/to/consolidated-report.json http://test-management-tool/api/upload
 
   deployment:
@@ -220,16 +222,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restore pnpm store
+      - name: Restore pnpm store cache
         uses: actions/cache@v3
         with:
           path: ~/.pnpm-store
-          key: ${{ needs.static-code-analysis.outputs.cache-pnpm }}
+          key: ${{ needs.static-code-analysis.outputs['pnpm-cache'] }}
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Configure pnpm to use store
+      - name: Configure pnpm store
         run: pnpm config set store-dir ~/.pnpm-store
 
       - name: Deploy to production
