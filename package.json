@@ -8,6 +8,7 @@
     "start": "next start",
     "db-server": "json-server ./src/data/db.json",
     "lint": "eslint 'src/**/*.{js,ts,tsx}' --fix || true",
+    "performance": "k6 run --vus 10 --duration 30s __tests__/performance/test.js",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run --e2e",
     "test": "next build && next start & wait-on http://localhost:3000 && cypress run --reporter mochawesome"
