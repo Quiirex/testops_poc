@@ -24,7 +24,7 @@ jobs:
         id: node-with-cache
         uses: magnetikonline/action-node-modules-cache@v2
         with:
-          node-version-file: .nvmrc
+          node-version: 18.x
           additional-cache-path: |
             ~/.cache/Cypress
 
@@ -47,7 +47,7 @@ jobs:
         id: node-with-cache
         uses: magnetikonline/action-node-modules-cache@v2
         with:
-          node-version-file: .nvmrc
+          node-version: 18.x
           additional-cache-path: |
             ~/.cache/Cypress
 
@@ -95,7 +95,7 @@ jobs:
         id: node-with-cache
         uses: magnetikonline/action-node-modules-cache@v2
         with:
-          node-version-file: .nvmrc
+          node-version: 18.x
           additional-cache-path: |
             ~/.cache/Cypress
 
