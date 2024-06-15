@@ -12,8 +12,8 @@ permissions:
   issues: write
 
 jobs:
-  static-code-analysis:
-    name: Static Code Analysis
+  linting:
+    name: Linting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -28,10 +28,10 @@ jobs:
       - name: Run ESLint
         run: pnpm run lint
 
-  test-automation:
-    name: Test Automation
+  e2e-testing:
+    name: E2E Testing
     runs-on: ubuntu-latest
-    needs: static-code-analysis
+    needs: linting
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -57,7 +57,7 @@ jobs:
   security-testing:
     name: Security Testing
     runs-on: ubuntu-latest
-    needs: test-automation
+    needs: e2e-testing
     services:
       app:
         image: quiirex/nowted-app:latest
@@ -70,7 +70,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: '18'
 
       - name: ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.10.0
