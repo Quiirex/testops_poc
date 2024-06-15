@@ -50,7 +50,9 @@ jobs:
         run: npx cypress run --e2e
 
       - name: Generate testing report
-        run: npx mochawesome-merge "cypress/reports/*.json" > report.json && npx marge report.json --reportFilename "testing_report" --reportTitle "Cypress Report" --reportPageTitle "Cypress Report"
+        run: |
+          npx mochawesome-merge "cypress/reports/*.json" > report.json
+          npx marge report.json --reportFilename "testing_report" --reportTitle "Cypress Report" --reportPageTitle "Cypress Report"
 
       - name: Upload testing report
         uses: actions/upload-artifact@v3
@@ -91,7 +93,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run k6 tests
-        run: npm run test:performance
+        run: npm run performance
 
       - name: Upload k6 performance reports
         uses: actions/upload-artifact@v3
