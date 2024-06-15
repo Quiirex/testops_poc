@@ -37,14 +37,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-
       - name: Install dependencies
-        run: pnpm install
+        run: npm install
 
       - name: Build application
-        run: pnpm run build
+        run: npm run build
 
       - name: Start server
         run: npm run start &
@@ -52,20 +49,16 @@ jobs:
       - name: Wait for server to start
         run: npx wait-on http://localhost:3000
 
-      - name: Run Cypress tests
-        run: npx cypress run --e2e --reporter mochawesome
+      - name: Run tests
+        run: npx cypress run --e2e
 
-      - name: Install mochawesome tools
-        run: |
-          pnpm add mochawesome-merge marge
+      - name: Generate testing report
+        run: npx mochawesome-merge "cypress/reports/*.json" > report.json && npx marge report.json --reportFilename "testing_report" --reportTitle "Cypress Report" --reportPageTitle "Cypress Report"
 
-      - name: Generate Cypress testing report
-        run: npx mochawesome-merge cypress/reports/*.json > report.json && npx marge report.json --reportFilename "e2e-testing-reports" --reportTitle "E2E Testing Report" --reportPageTitle "E2E Testing Report"
-
-      - name: Upload Cypress test reports
+      - name: Upload testing report
         uses: actions/upload-artifact@v3
         with:
-          name: e2e-testing-reports
+          name: testing_report
           path: mochawesome-report
 
   security-testing:
