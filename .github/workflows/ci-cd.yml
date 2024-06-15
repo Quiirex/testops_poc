@@ -53,11 +53,18 @@ jobs:
       - name: Run ESLint and generate report
         run: npm run lint
 
+      - name: Annotate Code Linting Results
+        uses: ataylorme/eslint-annotate-action@v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          report-json: 'lint_report.json'
+
       - name: Upload ESLint report
         uses: actions/upload-artifact@v4
         with:
-          name: lint-report
-          path: lint-report.json
+          name: lint_report.json
+          path: lint_report.json
+          retention-days: 5
 
   e2e-testing:
     name: E2E Testing
@@ -97,6 +104,7 @@ jobs:
         with:
           name: e2e_testing_report
           path: mochawesome-report
+          retention-days: 5
 
   security-testing:
     name: Security Testing
@@ -116,8 +124,9 @@ jobs:
       - name: Upload ZAP reports
         uses: actions/upload-artifact@v4
         with:
-          name: security-testing-reports
-          path: security-testing-reports
+          name: zap_scan
+          path: zap_scan
+          retention-days: 5
 
   # performance-testing:
   #   name: Performance Testing
