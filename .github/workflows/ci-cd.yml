@@ -20,14 +20,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-
       - name: Install dependencies
-        run: pnpm install
+        run: npm install
 
       - name: Run ESLint
-        run: pnpm run lint
+        run: npm run lint
 
   e2e-testing:
     name: E2E Testing
