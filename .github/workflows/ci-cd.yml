@@ -53,10 +53,10 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-  build:
-    name: Build
+  e2e-testing:
+    name: E2E Testing
     runs-on: ubuntu-latest
-    needs: setup
+    needs: linting
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -71,22 +71,6 @@ jobs:
 
       - name: Build application
         run: npm run build
-
-  e2e-testing:
-    name: E2E Testing
-    runs-on: ubuntu-latest
-    needs: [linting, build]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-
-      - name: Use cached node_modules
-        run: npm ci --cache ~/.npm
 
       - name: Start server
         run: npm run start &
