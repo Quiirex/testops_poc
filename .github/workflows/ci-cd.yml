@@ -39,7 +39,7 @@ jobs:
     needs: static-code-analysis
     services:
       app:
-        image: quiirex/nowted-app:v2
+        image: quiirex/nowted-app:latest
         ports:
           - 3000:3000
         options: >-
@@ -80,7 +80,7 @@ jobs:
     needs: test-automation
     services:
       app:
-        image: quiirex/nowted-app:v2
+        image: quiirex/nowted-app:latest
         ports:
           - 3000:3000
         options: >-
@@ -124,7 +124,7 @@ jobs:
     needs: performance-testing
     services:
       app:
-        image: quiirex/nowted-app:v2
+        image: quiirex/nowted-app:latest
         ports:
           - 3000:3000
         options: >-
