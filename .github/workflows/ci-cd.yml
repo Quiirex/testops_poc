@@ -53,13 +53,18 @@ jobs:
         run: npx wait-on http://localhost:3000
 
       - name: Run Cypress tests
-        run: npx cypress run --reporter mochawesome
+        run: npx cypress run --e2e
+
+      - name: Generate Cypress testing report
+        run: |
+          npx mochawesome-merge "cypress/reports/*.json" > report.json
+          npx marge report.json --reportFilename "testing_report" --reportTitle "Cypress Report" --reportPageTitle "Cypress Report"
 
       - name: Upload Cypress test reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: cypress-reports
-          path: cypress/reports
+          name: e2e-testing-reports
+          path: mochawesome-report
 
   security-testing:
     name: Security Testing
@@ -79,40 +84,25 @@ jobs:
         with:
           target: 'http://app:3000'
 
-  reporting:
-    name: Reporting
+      - name: Upload ZAP reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-testing-reports
+          path: security-testing-reports
+
+  performance-testing:
+    name: Performance Testing
     runs-on: ubuntu-latest
-    needs: [e2e-testing, security-testing]
-    if: always()
+    needs: security-testing
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download Cypress test reports
-        uses: actions/download-artifact@v3
-        with:
-          name: cypress-reports
-          path: cypress/reports
-
-      - name: Install mochawesome tools
-        run: |
-          npm install -g mochawesome
-          npm install -g mochawesome-merge
-          npm install -g marge
-
-      - name: Generate Cypress testing report
-        run: |
-          npx mochawesome-merge "cypress/reports/*.json" > report.json
-          npx marge report.json --reportFilename "testing_report" --reportTitle "Cypress Report" --reportPageTitle "Cypress Report"
-
-      - name: Upload Cypress test reports
-        uses: actions/upload-artifact@v3
-        with:
-          name: cypress-reports
-          path: mochawesome-report
+      - name: Run k6 tests
+        run: npm run test:performance
 
       - name: Upload k6 performance reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: k6-reports
-          path: k6-reports
+          name: performance-testing-reports
+          path: performance-testing-reports
