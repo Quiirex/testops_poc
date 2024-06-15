@@ -13,50 +13,80 @@ permissions:
   contents: read
 
 jobs:
-  linting:
-    name: Linting
+  setup:
+    name: Setup
     runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.node-with-cache.outputs.cache-hit }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js with node_modules cache
         id: node-with-cache
-        uses: magnetikonline/action-node-modules-cache@v2
+        uses: actions/cache@v4
         with:
-          node-version: 18.x
-          additional-cache-path: |
-            ~/.cache/Cypress
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install npm packages
-        if: steps.node-with-cache.outputs.cache-hit != 'true'
         run: npm ci
+
+  linting:
+    name: Linting
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      - name: Use cached node_modules
+        run: npm ci --cache ~/.npm
 
       - name: Run ESLint
         run: npm run lint
 
-  e2e-testing:
-    name: E2E Testing
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    needs: linting
+    needs: setup
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js with node_modules cache
-        id: node-with-cache
-        uses: magnetikonline/action-node-modules-cache@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          additional-cache-path: |
-            ~/.cache/Cypress
 
-      - name: Install npm packages
-        if: steps.node-with-cache.outputs.cache-hit != 'true'
-        run: npm ci
+      - name: Use cached node_modules
+        run: npm ci --cache ~/.npm
 
       - name: Build application
         run: npm run build
+
+  e2e-testing:
+    name: E2E Testing
+    runs-on: ubuntu-latest
+    needs: [linting, build]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      - name: Use cached node_modules
+        run: npm ci --cache ~/.npm
 
       - name: Start server
         run: npm run start &
@@ -88,21 +118,6 @@ jobs:
         ports:
           - 3000:3000
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js with node_modules cache
-        id: node-with-cache
-        uses: magnetikonline/action-node-modules-cache@v2
-        with:
-          node-version: 18.x
-          additional-cache-path: |
-            ~/.cache/Cypress
-
-      - name: Install npm packages
-        if: steps.node-with-cache.outputs.cache-hit != 'true'
-        run: npm ci
-
       - name: ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.10.0
         with:
