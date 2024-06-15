@@ -76,6 +76,8 @@ jobs:
   reporting:
     name: Reporting
     runs-on: ubuntu-latest
+    needs: [e2e-testing, security-testing]
+    if: always()
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
