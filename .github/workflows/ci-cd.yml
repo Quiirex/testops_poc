@@ -52,12 +52,12 @@ jobs:
       - name: Generate testing report
         run: |
           npx mochawesome-merge "cypress/reports/*.json" > report.json
-          npx marge report.json --reportFilename "testing_report" --reportTitle "Cypress Report" --reportPageTitle "Cypress Report"
+          npx marge report.json --reportFilename "e2e_testing_report" --reportTitle "E2E Testing Report" --reportPageTitle "E2E Testing Report"
 
       - name: Upload testing report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: testing_report
+          name: e2e_testing_report
           path: mochawesome-report
 
   security-testing:
@@ -79,7 +79,7 @@ jobs:
           target: 'http://app:3000'
 
       - name: Upload ZAP reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-testing-reports
           path: security-testing-reports
@@ -96,7 +96,7 @@ jobs:
         run: npm run performance
 
       - name: Upload k6 performance reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: performance-testing-reports
           path: performance-testing-reports
