@@ -94,8 +94,16 @@ jobs:
           name: cypress-reports
           path: cypress/reports
 
+      - name: Install mochawesome tools
+        run: |
+          npm install -g mochawesome
+          npm install -g mochawesome-merge
+          npm install -g marge
+
       - name: Generate Cypress testing report
-        run: npx mochawesome-merge "cypress/reports/*.json" > report.json && npx marge report.json --reportFilename "testing_report" --reportTitle "Cypress Report" --reportPageTitle "Cypress Report"
+        run: |
+          npx mochawesome-merge "cypress/reports/*.json" > report.json
+          npx marge report.json --reportFilename "testing_report" --reportTitle "Cypress Report" --reportPageTitle "Cypress Report"
 
       - name: Upload Cypress test reports
         uses: actions/upload-artifact@v3
