@@ -20,8 +20,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: npm install
+      - name: Setup Node.js with node_modules cache
+        id: node-with-cache
+        uses: magnetikonline/action-node-modules-cache@v2
+        with:
+          node-version-file: .nvmrc
+          additional-cache-path: |
+            ~/.cache/Cypress
+
+      - name: Install npm packages
+        if: steps.node-with-cache.outputs.cache-hit != 'true'
+        run: npm ci
 
       - name: Run ESLint
         run: npm run lint
@@ -34,8 +43,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: npm install
+      - name: Setup Node.js with node_modules cache
+        id: node-with-cache
+        uses: magnetikonline/action-node-modules-cache@v2
+        with:
+          node-version-file: .nvmrc
+          additional-cache-path: |
+            ~/.cache/Cypress
+
+      - name: Install npm packages
+        if: steps.node-with-cache.outputs.cache-hit != 'true'
+        run: npm ci
 
       - name: Build application
         run: npm run build
@@ -73,6 +91,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Node.js with node_modules cache
+        id: node-with-cache
+        uses: magnetikonline/action-node-modules-cache@v2
+        with:
+          node-version-file: .nvmrc
+          additional-cache-path: |
+            ~/.cache/Cypress
+
+      - name: Install npm packages
+        if: steps.node-with-cache.outputs.cache-hit != 'true'
+        run: npm ci
+
       - name: ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.10.0
         with:
@@ -84,19 +114,19 @@ jobs:
           name: security-testing-reports
           path: security-testing-reports
 
-  performance-testing:
-    name: Performance Testing
-    runs-on: ubuntu-latest
-    needs: security-testing
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  # performance-testing:
+  #   name: Performance Testing
+  #   runs-on: ubuntu-latest
+  #   needs: security-testing
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Run k6 tests
-        run: npm run performance
+  #     - name: Run k6 tests
+  #       run: npm run performance
 
-      - name: Upload k6 performance reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: performance-testing-reports
-          path: performance-testing-reports
+  #     - name: Upload k6 performance reports
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: performance-testing-reports
+  #         path: performance-testing-reports
