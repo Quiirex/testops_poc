@@ -42,11 +42,6 @@ jobs:
         image: quiirex/nowted-app:latest
         ports:
           - 3000:3000
-        options: >-
-          --health-cmd "curl --fail http://localhost:3000 || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -83,11 +78,6 @@ jobs:
         image: quiirex/nowted-app:latest
         ports:
           - 3000:3000
-        options: >-
-          --health-cmd "curl --fail http://localhost:3000 || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -127,11 +117,6 @@ jobs:
         image: quiirex/nowted-app:latest
         ports:
           - 3000:3000
-        options: >-
-          --health-cmd "curl --fail http://localhost:3000 || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
