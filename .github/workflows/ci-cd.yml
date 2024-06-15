@@ -39,7 +39,7 @@ jobs:
     needs: static-code-analysis
     services:
       app:
-        image: node:16
+        image: quiirex/nowted-app:v1
         ports:
           - 3000:3000
         options: >-
@@ -68,11 +68,8 @@ jobs:
       - name: Build application
         run: pnpm run build
 
-      - name: Start server
-        run: pnpm run start
-
       - name: Wait for server to start
-        run: npx wait-on http://app:3000
+        run: npx wait-on http://localhost:3000
 
       - name: Run Cypress tests
         run: npx cypress run --e2e
@@ -83,7 +80,7 @@ jobs:
     needs: test-automation
     services:
       app:
-        image: node:16
+        image: quiirex/nowted-app:v1
         ports:
           - 3000:3000
         options: >-
@@ -112,11 +109,8 @@ jobs:
       - name: Build application
         run: pnpm run build
 
-      - name: Start server
-        run: pnpm run start
-
       - name: Wait for server to start
-        run: npx wait-on http://app:3000
+        run: npx wait-on http://localhost:3000
 
       - name: Run k6 local test
         uses: grafana/k6-action@v0.3.1
@@ -130,7 +124,7 @@ jobs:
     needs: performance-testing
     services:
       app:
-        image: node:16
+        image: quiirex/nowted-app:v1
         ports:
           - 3000:3000
         options: >-
@@ -158,7 +152,7 @@ jobs:
       - name: ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.10.0
         with:
-          target: 'http://app:3000'
+          target: 'http://localhost:3000'
 
   reporting:
     name: Reporting
@@ -193,7 +187,6 @@ jobs:
 
       - name: Generate consolidated report
         run: |
-          # Assuming you have a script or tool to merge different test reports
           pnpm run generate-consolidated-report
 
       - name: Upload consolidated report
@@ -220,7 +213,6 @@ jobs:
 
       - name: Upload test results to Test Management Tool
         run: |
-          # Replace with actual commands to upload to your test management tool
           curl -X POST -H "Content-Type: application/json" -d @path/to/consolidated-report.json http://test-management-tool/api/upload
 
   deployment:
