@@ -68,11 +68,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
       - name: ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.10.0
         with:
@@ -81,7 +76,6 @@ jobs:
   reporting:
     name: Reporting
     runs-on: ubuntu-latest
-    needs: [linting, e2e-testing, security-testing]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
