@@ -50,8 +50,14 @@ jobs:
       - name: Use cached node_modules
         run: npm ci --cache ~/.npm
 
-      - name: Run ESLint
+      - name: Run ESLint and generate report
         run: npm run lint
+
+      - name: Upload ESLint report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: lint-report.json
 
   e2e-testing:
     name: E2E Testing
