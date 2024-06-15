@@ -121,11 +121,11 @@ jobs:
           target: 'http://app:3000'
 
       - name: Upload ZAP reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: zap_scan
-          path: zap_scan
-          retention-days: 5
+      uses: actions/upload-artifact@v4
+      with:
+        name: zap_scan
+        path: zap-reports/
+        retention-days: 5
 
   # performance-testing:
   #   name: Performance Testing
