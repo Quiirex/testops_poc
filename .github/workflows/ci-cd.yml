@@ -57,8 +57,7 @@ jobs:
 
       - name: Install mochawesome tools
         run: |
-          pnpm install -g mochawesome-merge
-          pnpm install -g marge
+          pnpm add mochawesome-merge marge
 
       - name: Generate Cypress testing report
         run: |
