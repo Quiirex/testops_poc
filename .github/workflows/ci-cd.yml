@@ -55,13 +55,19 @@ jobs:
       - name: Run Cypress tests
         run: npx cypress run --e2e
 
-      - name: Generate testing report
-        run: npx mochawesome-merge "cypress/reports/*.json" > report.json && npx marge report.json --reportFilename "testing_report" --reportTitle "Cypress Report" --reportPageTitle "Cypress Report"
+      - name: Install mochawesome tools
+        run: |
+          pnpm add mochawesome-merge marge
 
-      - name: Upload testing report
+      - name: Generate Cypress testing report
+        run: |
+          npx mochawesome-merge "cypress/reports/*.json" > report.json
+          npx mochawesome-report-generator report.json --reportFilename "e2e-testing-reports" --reportTitle "E2E Testing Report" --reportPageTitle "E2E Testing Report"
+
+      - name: Upload Cypress test reports
         uses: actions/upload-artifact@v3
         with:
-          name: testing_report
+          name: e2e-testing-reports
           path: mochawesome-report
 
   security-testing:
