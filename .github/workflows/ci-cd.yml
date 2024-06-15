@@ -16,14 +16,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-
       - name: Install pnpm
         run: npm install -g pnpm
 
@@ -37,22 +29,9 @@ jobs:
     name: Test Automation
     runs-on: ubuntu-latest
     needs: static-code-analysis
-    services:
-      app:
-        image: quiirex/nowted-app:latest
-        ports:
-          - 3000:3000
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
 
       - name: Install pnpm
         run: npm install -g pnpm
@@ -62,6 +41,9 @@ jobs:
 
       - name: Build application
         run: pnpm run build
+
+      - name: Start server
+        run: npm run start &
 
       - name: Wait for server to start
         run: npx wait-on http://localhost:3000
@@ -81,14 +63,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
 
       - name: Install pnpm
         run: npm install -g pnpm
@@ -121,14 +95,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -139,82 +105,58 @@ jobs:
         with:
           target: 'http://localhost:3000'
 
-  reporting:
-    name: Reporting
-    runs-on: ubuntu-latest
-    needs: [test-automation, performance-testing, security-testing]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  # reporting:
+  #   name: Reporting
+  #   runs-on: ubuntu-latest
+  #   needs: [test-automation, performance-testing, security-testing]
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
+  #     - name: Generate Cypress testing report
+  #       run: npx mochawesome-merge "cypress/reports/*.json" > report.json && npx marge report.json --reportFilename "testing_report" --reportTitle "Cypress Report" --reportPageTitle "Cypress Report"
 
-      - name: Generate Cypress testing report
-        run: npx mochawesome-merge "cypress/reports/*.json" > report.json && npx marge report.json --reportFilename "testing_report" --reportTitle "Cypress Report" --reportPageTitle "Cypress Report"
+  #     - name: Upload Cypress test reports
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: cypress-reports
+  #         path: mochawesome-report
 
-      - name: Upload Cypress test reports
-        uses: actions/upload-artifact@v3
-        with:
-          name: cypress-reports
-          path: mochawesome-report
+  #     - name: Upload k6 performance reports
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: k6-reports
+  #         path: path/to/k6-reports
 
-      - name: Upload k6 performance reports
-        uses: actions/upload-artifact@v3
-        with:
-          name: k6-reports
-          path: path/to/k6-reports
+  #     - name: Generate consolidated report
+  #       run: |
+  #         pnpm run generate-consolidated-report
 
-      - name: Generate consolidated report
-        run: |
-          pnpm run generate-consolidated-report
+  #     - name: Upload consolidated report
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: consolidated-report
+  #         path: path/to/consolidated-report
 
-      - name: Upload consolidated report
-        uses: actions/upload-artifact@v3
-        with:
-          name: consolidated-report
-          path: path/to/consolidated-report
+  # test-management:
+  #   name: Test Management
+  #   runs-on: ubuntu-latest
+  #   needs: reporting
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-  test-management:
-    name: Test Management
-    runs-on: ubuntu-latest
-    needs: reporting
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  #     - name: Upload test results to Test Management Tool
+  #       run: |
+  #         curl -X POST -H "Content-Type: application/json" -d @path/to/consolidated-report.json http://test-management-tool/api/upload
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
+  # deployment:
+  #   name: Deployment
+  #   runs-on: ubuntu-latest
+  #   needs: test-management
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Upload test results to Test Management Tool
-        run: |
-          curl -X POST -H "Content-Type: application/json" -d @path/to/consolidated-report.json http://test-management-tool/api/upload
-
-  deployment:
-    name: Deployment
-    runs-on: ubuntu-latest
-    needs: test-management
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-
-      - name: Deploy to production
-        run: pnpm run deploy
+  #     - name: Deploy to production
+  #       run: pnpm run deploy
