@@ -108,6 +108,8 @@ jobs:
   security-testing:
     name: Security Testing
     runs-on: ubuntu-latest
+    outputs:
+      full_scan_result: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
     needs: e2e-testing
     services:
       app:
@@ -116,30 +118,39 @@ jobs:
           - 3000:3000
     steps:
       - name: ZAP Full Scan
+        id: full_scan
         uses: zaproxy/action-full-scan@v0.10.0
         with:
           target: 'http://app:3000'
 
-      - name: Upload ZAP reports
+      - name: Store Full Scan Result
+        id: store_full_scan_result
+        run: |
+          mkdir -p full_scan_results
+          mv *.html full_scan_results/ || true
+          FULL_RESULT_FILE=$(find full_scan_results -name "*.html" -type f)
+          echo "::set-output name=full_scan_result::$FULL_RESULT_FILE"
+
+      - name: Upload Full Scan Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: zap_scan
-          path: zap-reports/
+          name: security_testing_report
+          path: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
           retention-days: 5
 
-  # performance-testing:
-  #   name: Performance Testing
-  #   runs-on: ubuntu-latest
-  #   needs: security-testing
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+  performance-testing:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    needs: security-testing
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     - name: Run k6 tests
-  #       run: npm run performance
+      - name: Run k6 tests
+        run: npm run performance
 
-  #     - name: Upload k6 performance reports
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: performance-testing-reports
-  #         path: performance-testing-reports
+      - name: Upload k6 performance reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-testing-reports
+          path: performance-testing-reports
