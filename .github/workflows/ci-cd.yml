@@ -53,16 +53,14 @@ jobs:
         run: npx wait-on http://localhost:3000
 
       - name: Run Cypress tests
-        run: npx cypress run --e2e
+        run: npx cypress run --e2e --reporter mochawesome
 
       - name: Install mochawesome tools
         run: |
           pnpm add mochawesome-merge marge
 
       - name: Generate Cypress testing report
-        run: |
-          npx mochawesome-merge "cypress/reports/*.json" > report.json
-          npx mochawesome-report-generator report.json --reportFilename "e2e-testing-reports" --reportTitle "E2E Testing Report" --reportPageTitle "E2E Testing Report"
+        run: npx mochawesome-merge cypress/reports/*.json > report.json && npx marge report.json --reportFilename "e2e-testing-reports" --reportTitle "E2E Testing Report" --reportPageTitle "E2E Testing Report"
 
       - name: Upload Cypress test reports
         uses: actions/upload-artifact@v3
