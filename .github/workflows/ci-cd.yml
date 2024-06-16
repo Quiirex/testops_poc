@@ -91,7 +91,7 @@ jobs:
         run: npx wait-on http://localhost:3000
 
       - name: Run tests
-        run: npx cypress run --e2e --reporter junit --reporter-options mochaFile=reports/TEST-[hash].xml
+        run: npx cypress run --reporter junit --reporter-options mochaFile=reports/TEST-[hash].xml
 
       # - name: Generate testing report
       #   run: |
@@ -115,6 +115,7 @@ jobs:
         if: always()
         run: |
           pip install trcli
+          junitparser merge --glob "reports/TEST-*" "reports/junit-report.xml"
           trcli -y \
             -h https://lukamlinaric.testrail.io/ \
             --project "TestOps PoC" \
@@ -123,7 +124,7 @@ jobs:
             parse_junit \
             --title "E2E Tests from CI/CD Pipeline" \
             --run-description ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \
-            -f "reports/junit*.xml"
+            -f "reports/junit-report.xml"
 
   security-testing:
     name: Security Testing
