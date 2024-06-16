@@ -112,6 +112,9 @@ jobs:
           python-version: '3.x'
 
       - name: Upload testing results to TestRail
+        env:
+          TESTRAIL_EMAIL: ${{ secrets.TESTRAIL_EMAIL }}
+          TESTRAIL_PASS: ${{ secrets.TESTRAIL_PASS }}
         if: always()
         run: |
           pip install trcli
@@ -119,8 +122,8 @@ jobs:
           trcli -y \
             -h https://lukamlinaric.testrail.io/ \
             --project "TestOps PoC" \
-            -u "${{ secrets.TESTRAIL_EMAIL }}" \
-            -p "${{ secrets.TESTRAIL_PASS }}" \
+            -u "$TESTRAIL_EMAIL" \
+            -p "$TESTRAIL_PASS" \
             parse_junit \
             --title "E2E Tests from CI/CD Pipeline" \
             --run-description ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \
