@@ -93,17 +93,17 @@ jobs:
       - name: Run tests
         run: npx cypress run --e2e --reporter junit --reporter-options mochaFile=reports/TEST-[hash].xml
 
-      - name: Generate testing report
-        run: |
-          npx mochawesome-merge "cypress/reports/*.json" > report.json
-          npx marge report.json --reportFilename "e2e_testing_report" --reportTitle "E2E Testing Report" --reportPageTitle "E2E Testing Report"
+      # - name: Generate testing report
+      #   run: |
+      #     npx mochawesome-merge "cypress/reports/*.json" > report.json
+      #     npx marge report.json --reportFilename "e2e_testing_report" --reportTitle "E2E Testing Report" --reportPageTitle "E2E Testing Report"
 
-      - name: Upload testing report
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e_testing_report
-          path: mochawesome-report
-          retention-days: 5
+      # - name: Upload testing report
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: e2e_testing_report
+      #     path: mochawesome-report
+      #     retention-days: 5
 
       - name: Python setup
         if: always()
@@ -123,7 +123,7 @@ jobs:
             parse_junit \
             --title "E2E Tests from CI/CD Pipeline" \
             --run-description ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \
-            -f "junit-report.xml"
+            -f "reports/junit*.xml"
 
   security-testing:
     name: Security Testing
