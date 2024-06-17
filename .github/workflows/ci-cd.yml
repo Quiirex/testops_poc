@@ -205,8 +205,7 @@ jobs:
           GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
         run: |
           gcloud container clusters get-credentials autopilot-cluster-1 --region europe-central2
-          sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" resources.yaml
-          kubectl apply -f resources.yaml
+          kubectl apply -f k8s/resources.yaml
 
   # performance-testing:
   #   name: Performance Testing
