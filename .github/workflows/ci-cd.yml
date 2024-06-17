@@ -213,7 +213,7 @@ jobs:
         env:
           IMAGE_TAG: ${{ needs.containerize-and-publish-image.outputs.image-tag }}
         run: |
-          IMAGE_TAG="$IMAGE_TAG"
+          IMAGE_TAG="${{ env.IMAGE_TAG }}"
           echo "Using image tag: $IMAGE_TAG"
           sed -i "s|quiirex/nowted-app:latest|$IMAGE_TAG|g" k8s/resources.yaml
           cat k8s/resources.yaml
