@@ -27,7 +27,7 @@ const NavItem = ({ href, label, className, ...props }: Titem) => {
               ? 'text-white font-medium'
               : 'inactive-text font-normal'
           } hover:text-white transition-all`,
-          className
+          className,
         )}
         {...props}
       >
@@ -46,7 +46,7 @@ export const Navbar = () => {
     { label: 'Home', path: '/' },
     { label: 'Product', path: '#product' },
     { label: 'Support', path: '#Support' },
-    { label: 'Contact Us', path: '#Contact' },
+    { label: 'Contact', path: '#Contact' },
   ];
 
   const handleToNextRoute = () => {
