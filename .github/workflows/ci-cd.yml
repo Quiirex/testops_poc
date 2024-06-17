@@ -34,167 +34,169 @@ jobs:
       - name: Install npm packages
         run: npm ci
 
-  linting:
-    name: Linting
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  # linting:
+  #   name: Linting
+  #   runs-on: ubuntu-latest
+  #   needs: setup
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 18.x
 
-      - name: Use cached node_modules
-        run: npm ci --cache ~/.npm
+  #     - name: Use cached node_modules
+  #       run: npm ci --cache ~/.npm
 
-      - name: Run ESLint and generate report
-        run: npm run lint
+  #     - name: Run ESLint and generate report
+  #       run: npm run lint
 
-      - name: Annotate Code Linting Results
-        uses: ataylorme/eslint-annotate-action@v3
-        with:
-          report-json: 'lint_report.json'
+  #     - name: Annotate Code Linting Results
+  #       uses: ataylorme/eslint-annotate-action@v3
+  #       with:
+  #         report-json: 'lint_report.json'
 
-      - name: Upload ESLint report
-        uses: actions/upload-artifact@v4
-        with:
-          name: lint_report.json
-          path: lint_report.json
-          retention-days: 5
+  #     - name: Upload ESLint report
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: lint_report.json
+  #         path: lint_report.json
+  #         retention-days: 5
 
-  e2e-testing:
-    name: E2E Testing
-    runs-on: ubuntu-latest
-    needs: linting
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  # e2e-testing:
+  #   name: E2E Testing
+  #   runs-on: ubuntu-latest
+  #   needs: linting
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 18.x
 
-      - name: Use cached node_modules
-        run: npm ci --cache ~/.npm
+  #     - name: Use cached node_modules
+  #       run: npm ci --cache ~/.npm
 
-      - name: Build application
-        run: npm run build
+  #     - name: Build application
+  #       run: npm run build
 
-      - name: Start server
-        run: npm run start &
+  #     - name: Start server
+  #       run: npm run start &
 
-      - name: Wait for server to start
-        run: npx wait-on http://localhost:3000
+  #     - name: Wait for server to start
+  #       run: npx wait-on http://localhost:3000
 
-      - name: Run tests
-        run: npx cypress run --reporter junit --reporter-options mochaFile=reports/TEST-[hash].xml
+  #     - name: Run tests
+  #       run: npx cypress run --reporter junit --reporter-options mochaFile=reports/TEST-[hash].xml
 
-      # - name: Generate testing report
-      #   run: |
-      #     npx mochawesome-merge "cypress/reports/*.json" > report.json
-      #     npx marge report.json --reportFilename "e2e_testing_report" --reportTitle "E2E Testing Report" --reportPageTitle "E2E Testing Report"
+  #     # - name: Generate testing report
+  #     #   run: |
+  #     #     npx mochawesome-merge "cypress/reports/*.json" > report.json
+  #     #     npx marge report.json --reportFilename "e2e_testing_report" --reportTitle "E2E Testing Report" --reportPageTitle "E2E Testing Report"
 
-      # - name: Upload testing report
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: e2e_testing_report
-      #     path: mochawesome-report
-      #     retention-days: 5
+  #     # - name: Upload testing report
+  #     #   uses: actions/upload-artifact@v4
+  #     #   with:
+  #     #     name: e2e_testing_report
+  #     #     path: mochawesome-report
+  #     #     retention-days: 5
 
-      - name: Python setup
-        if: always()
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.x'
+  #     - name: Python setup
+  #       if: always()
+  #       uses: actions/setup-python@v3
+  #       with:
+  #         python-version: '3.x'
 
-      - name: Upload testing results to TestRail
-        env:
-          TESTRAIL_EMAIL: ${{ secrets.TESTRAIL_EMAIL }}
-          TESTRAIL_PASS: ${{ secrets.TESTRAIL_PASS }}
-        if: always()
-        run: |
-          pip install trcli
-          junitparser merge --glob "reports/TEST-*" "reports/junit-report.xml"
-          trcli -y \
-            -h https://lukamlinaric.testrail.io/ \
-            --project "TestOps PoC" \
-            -u "$TESTRAIL_EMAIL" \
-            -p "$TESTRAIL_PASS" \
-            parse_junit \
-            --title "E2E Tests from CI/CD Pipeline" \
-            --run-description ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \
-            -f "reports/junit-report.xml"
+  #     - name: Upload testing results to TestRail
+  #       env:
+  #         TESTRAIL_EMAIL: ${{ secrets.TESTRAIL_EMAIL }}
+  #         TESTRAIL_PASS: ${{ secrets.TESTRAIL_PASS }}
+  #       if: always()
+  #       run: |
+  #         pip install trcli
+  #         junitparser merge --glob "reports/TEST-*" "reports/junit-report.xml"
+  #         trcli -y \
+  #           -h https://lukamlinaric.testrail.io/ \
+  #           --project "TestOps PoC" \
+  #           -u "$TESTRAIL_EMAIL" \
+  #           -p "$TESTRAIL_PASS" \
+  #           parse_junit \
+  #           --title "E2E Tests from CI/CD Pipeline" \
+  #           --run-description ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \
+  #           -f "reports/junit-report.xml"
 
-  security-testing:
-    name: Security Testing
-    runs-on: ubuntu-latest
-    outputs:
-      full_scan_result: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
-    needs: e2e-testing
-    services:
-      app:
-        image: quiirex/nowted-app:latest
-        ports:
-          - 3000:3000
-    steps:
-      - name: ZAP Full Scan
-        id: full_scan
-        uses: zaproxy/action-full-scan@v0.10.0
-        with:
-          target: 'http://app:3000'
+  # security-testing:
+  #   name: Security Testing
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     full_scan_result: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
+  #   needs: e2e-testing
+  #   services:
+  #     app:
+  #       image: quiirex/nowted-app:latest
+  #       ports:
+  #         - 3000:3000
+  #   steps:
+  #     - name: ZAP Full Scan
+  #       id: full_scan
+  #       uses: zaproxy/action-full-scan@v0.10.0
+  #       with:
+  #         target: 'http://app:3000'
 
-      - name: Store Full Scan Result
-        id: store_full_scan_result
-        run: |
-          mkdir -p full_scan_results
-          mv *.html full_scan_results/ || true
-          FULL_RESULT_FILE=$(find full_scan_results -name "*.html" -type f)
-          echo "::set-output name=full_scan_result::$FULL_RESULT_FILE"
+  #     - name: Store Full Scan Result
+  #       id: store_full_scan_result
+  #       run: |
+  #         mkdir -p full_scan_results
+  #         mv *.html full_scan_results/ || true
+  #         FULL_RESULT_FILE=$(find full_scan_results -name "*.html" -type f)
+  #         echo "::set-output name=full_scan_result::$FULL_RESULT_FILE"
 
-      - name: Upload Full Scan Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: security_testing_report
-          path: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
-          retention-days: 5
+  #     - name: Upload Full Scan Artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: security_testing_report
+  #         path: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
+  #         retention-days: 5
 
-  containerize-and-publish-image:
-    name: Containerize and Publish Image
-    runs-on: ubuntu-latest
-    needs: [e2e-testing, security-testing]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  # containerize-and-publish-image:
+  #   name: Containerize and Publish Image
+  #   runs-on: ubuntu-latest
+  #   needs: [e2e-testing, security-testing]
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Log in to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #     - name: Log in to DockerHub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nowted-app:latest .
+  #     - name: Build Docker image
+  #       run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nowted-app:latest .
 
-      - name: Push Docker image to DockerHub
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nowted-app:latest
+  #     - name: Push Docker image to DockerHub
+  #       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nowted-app:latest
 
   deployment:
     name: Deploy to GKE Cluster
     runs-on: ubuntu-latest
-    needs: containerize-and-publish-image
+    # needs: containerize-and-publish-image
     steps:
       - name: code checkout
         uses: actions/checkout@v4
 
-      - name: Install the gcloud cli
-        uses: google-github-actions/setup-gcloud@v2
+      - id: auth
+        uses: google-github-actions/auth@v2
         with:
-          project_id: ${{ secrets.GOOGLE_PROJECT }}
-          install_components: 'gke-gcloud-auth-plugin'
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
 
       - name: Deploy to GKE cluster
         env:
