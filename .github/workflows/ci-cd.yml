@@ -181,9 +181,15 @@ jobs:
         name: Build and Push Docker Image
         run: |
           IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/nowted-app:${{ github.sha }}
-          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+          echo $IMAGE_TAG > image-tag.txt
           docker build -t $IMAGE_TAG .
           docker push $IMAGE_TAG
+
+      - name: Upload IMAGE_TAG file
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-tag
+          path: image-tag.txt
 
   deployment:
     name: Deploy to GKE Cluster
@@ -209,11 +215,14 @@ jobs:
           gcloud container clusters get-credentials autopilot-cluster-1 --region europe-central2
           kubectl config current-context
 
+      - name: Download IMAGE_TAG file
+        uses: actions/download-artifact@v4
+        with:
+          name: image-tag
+
       - name: Apply Kubernetes manifests
-        env:
-          IMAGE_TAG: ${{ needs.containerize-and-publish-image.outputs.image-tag }}
         run: |
-          IMAGE_TAG="${{ env.IMAGE_TAG }}"
+          IMAGE_TAG=$(cat image-tag.txt)
           echo "Using image tag: $IMAGE_TAG"
           sed -i "s|quiirex/nowted-app:latest|$IMAGE_TAG|g" k8s/resources.yaml
           cat k8s/resources.yaml
