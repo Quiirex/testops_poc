@@ -182,7 +182,7 @@ jobs:
           IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/nowted-app:${{ github.sha }}
           docker build -t $IMAGE_TAG .
           docker push $IMAGE_TAG
-          echo "::set-output name=image-tag::$IMAGE_TAG"
+          echo "image-tag=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
   deployment:
     name: Deploy to GKE Cluster
@@ -212,7 +212,7 @@ jobs:
           IMAGE_TAG="${{ needs.containerize-and-publish-image.outputs.image-tag }}"
           echo "Using image tag: $IMAGE_TAG"
           sed -i "s|quiirex/nowted-app:latest|$IMAGE_TAG|g" k8s/resources.yaml
-          cat k8s/resources.yaml  # Print the updated YAML for debugging
+          cat k8s/resources.yaml
           kubectl apply -f k8s/resources.yaml
 
       - name: Verify Deployment
