@@ -209,8 +209,10 @@ jobs:
 
       - name: Apply Kubernetes manifests
         run: |
-          IMAGE_TAG=${{ needs.containerize-and-publish-image.outputs.image-tag }}
+          IMAGE_TAG="${{ needs.containerize-and-publish-image.outputs.image-tag }}"
+          echo "Using image tag: $IMAGE_TAG"
           sed -i "s|quiirex/nowted-app:latest|$IMAGE_TAG|g" k8s/resources.yaml
+          cat k8s/resources.yaml  # Print the updated YAML for debugging
           kubectl apply -f k8s/resources.yaml
 
       - name: Verify Deployment
