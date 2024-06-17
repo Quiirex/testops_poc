@@ -180,7 +180,7 @@ jobs:
       - id: build-and-push
         run: |
           IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/nowted-app:${{ github.sha }}
-          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $env:GITHUB_OUTPUT
           docker build -t $IMAGE_TAG .
           docker push $IMAGE_TAG
 
