@@ -32,6 +32,8 @@ metadata:
   name: testopspoc
   labels:
     app: testopspoc
+  annotations:
+    kubernetes.io/change-cause: 'Deploying $(date)'
 spec:
   replicas: 1
   selector:
