@@ -165,6 +165,8 @@ jobs:
   containerize-and-publish-image:
     name: Containerize and Publish Image
     runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.build-and-push.outputs.image-tag }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -175,16 +177,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Docker image
+      - id: build-and-push
         run: |
           IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/nowted-app:${{ github.sha }}
           docker build -t $IMAGE_TAG .
-          echo $IMAGE_TAG > image-tag.txt
-
-      - name: Push Docker image to DockerHub
-        run: |
-          IMAGE_TAG=$(cat image-tag.txt)
           docker push $IMAGE_TAG
+          echo "::set-output name=image-tag::$IMAGE_TAG"
 
   deployment:
     name: Deploy to GKE Cluster
@@ -211,8 +209,8 @@ jobs:
 
       - name: Apply Kubernetes manifests
         run: |
-          IMAGE_TAG=$(cat image-tag.txt)
-          sed -i "s|quiirex/nowted-app:latest|${IMAGE_TAG}|g" k8s/resources.yaml
+          IMAGE_TAG=${{ needs.containerize-and-publish-image.outputs.image-tag }}
+          sed -i "s|quiirex/nowted-app:latest|$IMAGE_TAG|g" k8s/resources.yaml
           kubectl apply -f k8s/resources.yaml
 
       - name: Verify Deployment
