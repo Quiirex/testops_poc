@@ -45,3 +45,4 @@ spec:
       containers:
         - name: testopspoc
           image: quiirex/nowted-app:latest
+          imagePullPolicy: Always
