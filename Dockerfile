@@ -3,31 +3,31 @@ FROM node:18-alpine AS build
 
 WORKDIR /app
 
-RUN apk add --no-cache build-base python3 && \
-    npm install -g pnpm
+RUN apk add --no-cache build-base python3
 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json package-lock.json ./
 
-RUN pnpm install
+RUN npm ci
 
 COPY . .
 
-RUN pnpm run build
+RUN npm run build
 
-RUN pnpm prune --production
+RUN npm prune --production
 
 # Stage 2: Final
 FROM node:18-alpine
 
 WORKDIR /app
 
-RUN npm install -g pnpm
-
-COPY --from=build /app/package.json /app/pnpm-lock.yaml /app/
+COPY --from=build /app/package.json /app/package-lock.json /app/
 COPY --from=build /app/.next /app/.next
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/public /app/public
 
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
 EXPOSE 3000
 
-CMD ["pnpm", "run", "start"]
+CMD ["npm", "run", "start"]
