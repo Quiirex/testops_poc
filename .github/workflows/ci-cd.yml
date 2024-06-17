@@ -200,12 +200,20 @@ jobs:
         with:
           install_components: 'gke-gcloud-auth-plugin'
 
-      - name: Deploy to GKE cluster
-        env:
-          GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+      - name: Configure kubectl
         run: |
           gcloud container clusters get-credentials autopilot-cluster-1 --region europe-central2
-          kubectl apply -f k8s/resources.yaml
+          kubectl config current-context
+
+      - name: Apply Kubernetes manifests
+        run: kubectl apply -f k8s/resources.yaml
+
+      - name: Verify Deployment
+        run: |
+          echo "Checking deployment status..."
+          kubectl rollout status deployment/testopspoc
+          echo "Listing pods..."
+          kubectl get pods
 
   # performance-testing:
   #   name: Performance Testing
