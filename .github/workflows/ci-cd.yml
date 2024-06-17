@@ -162,8 +162,8 @@ jobs:
           path: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
           retention-days: 5
 
-  containerize-and-publish:
-    name: Containerize and Publish
+  containerize-and-publish-image:
+    name: Containerize and Publish Image
     runs-on: ubuntu-latest
     needs: [e2e-testing, security-testing]
     steps:
@@ -181,6 +181,28 @@ jobs:
 
       - name: Push Docker image to DockerHub
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nowted-app:latest
+
+  deployment:
+    name: Deploy to GKE Cluster
+    runs-on: ubuntu-latest
+    needs: containerize-and-publish-image
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v4
+
+      - name: Install the gcloud cli
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GOOGLE_PROJECT }}
+          install_components: 'gke-gcloud-auth-plugin'
+
+      - name: Deploy to GKE cluster
+        env:
+          GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+        run: |
+          gcloud container clusters get-credentials autopilot-cluster-1 --region europe-central2
+          sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" resources.yaml
+          kubectl apply -f resources.yaml
 
   # performance-testing:
   #   name: Performance Testing
