@@ -185,7 +185,7 @@ jobs:
   deployment:
     name: Deploy to GKE Cluster
     runs-on: ubuntu-latest
-    # needs: containerize-and-publish-image
+    needs: containerize-and-publish-image
     steps:
       - name: code checkout
         uses: actions/checkout@v4
