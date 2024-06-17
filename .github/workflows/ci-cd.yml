@@ -166,7 +166,7 @@ jobs:
     name: Containerize and Publish Image
     runs-on: ubuntu-latest
     outputs:
-      image-tag: ${{ steps.build-and-push.outputs.image-tag }}
+      image-tag: ${{ steps.build-and-push.outputs.IMAGE_TAG }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -180,9 +180,9 @@ jobs:
       - id: build-and-push
         run: |
           IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/nowted-app:${{ github.sha }}
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
           docker build -t $IMAGE_TAG .
           docker push $IMAGE_TAG
-          echo "image-tag=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
   deployment:
     name: Deploy to GKE Cluster
