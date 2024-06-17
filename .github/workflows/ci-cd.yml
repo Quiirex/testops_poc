@@ -210,8 +210,10 @@ jobs:
           kubectl config current-context
 
       - name: Apply Kubernetes manifests
+        env:
+          IMAGE_TAG: ${{ needs.containerize-and-publish-image.outputs.image-tag }}
         run: |
-          IMAGE_TAG="${{ needs.containerize-and-publish-image.outputs.image-tag }}"
+          IMAGE_TAG="$IMAGE_TAG"
           echo "Using image tag: $IMAGE_TAG"
           sed -i "s|quiirex/nowted-app:latest|$IMAGE_TAG|g" k8s/resources.yaml
           cat k8s/resources.yaml
