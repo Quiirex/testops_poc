@@ -241,7 +241,7 @@ jobs:
     # needs: deployment
     services:
       app:
-        image: quiirex/nowted-app:latest
+        image: ${{ secrets.DOCKER_IMAGE }}:latest
         ports:
           - 3000:3000
     steps:
@@ -252,15 +252,15 @@ jobs:
         uses: grafana/k6-action@v0.3.1
         with:
           filename: __tests__/performance/test.js
-          flags: --vus 50 --duration 5s
+          flags: --vus 50 --duration 15s --out json=performance-testing-report.json
         env:
           BASE_URL: 'http://app:3000'
 
       - name: Upload k6 performance reports
         uses: actions/upload-artifact@v4
         with:
-          name: performance-testing-reports
-          path: performance-testing-reports
+          name: performance-testing-report
+          path: performance-testing-report.json
 
   # notifications:
   #   name: Notifications
