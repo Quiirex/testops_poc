@@ -127,9 +127,9 @@ jobs:
   security-testing:
     name: Security Testing
     runs-on: ubuntu-latest
+    needs: e2e-testing
     outputs:
       full_scan_result: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
-    needs: e2e-testing
     services:
       app:
         image: quiirex/nowted-app:latest
@@ -160,6 +160,7 @@ jobs:
   performance-testing:
     name: Performance Testing
     runs-on: ubuntu-latest
+    needs: security-testing
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
