@@ -242,12 +242,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      - name: Use cached node_modules
+        run: npm ci --cache ~/.npm
+
+      - name: Build application
+        run: npm run build
+
       - name: Install k6
         run: |
           curl https://github.com/grafana/k6/releases/download/v0.47.0/k6-v0.47.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
-      - name: Install packages
-        run: |
-          npm install
+
       - name: Start server and run tests
         run: |
           npm start & npx wait-on http://localhost:3000
