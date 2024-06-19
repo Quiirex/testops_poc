@@ -275,6 +275,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: performance-testing-report
+          path: performance-testing-report
 
       - name: Notify Email
         uses: dawidd6/action-send-mail@v3
