@@ -241,7 +241,7 @@ jobs:
     # needs: deployment
     services:
       app:
-        image: ${{ secrets.DOCKER_IMAGE }}:latest
+        image: quiirex/nowted-app:latest
         ports:
           - 3000:3000
     steps:
