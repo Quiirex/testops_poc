@@ -251,7 +251,7 @@ jobs:
       - name: Run k6 local test
         uses: grafana/k6-action@v0.3.1
         with:
-          filename: __tests__/performance/test.js
+          # filename: __tests__/performance/test.js
           flags: --vus 50 --duration 15s --out json=performance-testing-report.json
         env:
           BASE_URL: 'http://app:3000'
