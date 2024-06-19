@@ -273,7 +273,7 @@ jobs:
           server_address: smtp.gmail.com
           server_port: 465
           subject: 'CI/CD Pipeline Notification'
-          body: 'The CI/CD pipeline has completed successfully.'
+          body: 'The CI/CD pipeline has completed successfully. See the attached testing reports.'
           to: ${{ secrets.EMAIL_TO }}
           from: ${{ secrets.EMAIL_FROM }}
           attachments: 'performance-testing-report'
