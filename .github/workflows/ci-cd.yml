@@ -239,11 +239,6 @@ jobs:
     name: Performance Testing
     runs-on: ubuntu-latest
     # needs: deployment
-    services:
-      app:
-        image: quiirex/nowted-app:latest
-        ports:
-          - 3000:3000
     steps:
       - name: Checkout
         uses: actions/checkout@v4
