@@ -162,112 +162,105 @@ jobs:
   #         path: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
   #         retention-days: 5
 
-  containerize-and-publish-image:
-    name: Containerize and Publish Image
-    runs-on: ubuntu-latest
-    outputs:
-      image-tag: ${{ steps.build-and-push.outputs.IMAGE_TAG }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Log in to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - id: build-and-push
-        name: Build and Push Docker Image
-        run: |
-          IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/nowted-app:${{ github.sha }}
-          echo $IMAGE_TAG > image-tag.txt
-          docker build -t $IMAGE_TAG .
-          docker push $IMAGE_TAG
-
-      - name: Upload IMAGE_TAG file
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-tag
-          path: image-tag.txt
-
-  deployment:
-    name: Deploy to GKE Cluster
-    runs-on: ubuntu-latest
-    needs: containerize-and-publish-image
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - id: auth
-        name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          install_components: 'gke-gcloud-auth-plugin'
-
-      - name: Configure kubectl
-        run: |
-          gcloud container clusters get-credentials autopilot-cluster-1 --region europe-central2
-          kubectl config current-context
-
-      - name: Download IMAGE_TAG file
-        uses: actions/download-artifact@v4
-        with:
-          name: image-tag
-
-      - name: Apply Kubernetes manifests
-        run: |
-          IMAGE_TAG=$(cat image-tag.txt)
-          echo "Using image tag: $IMAGE_TAG"
-          sed -i "s|quiirex/nowted-app:latest|$IMAGE_TAG|g" k8s/resources.yaml
-          cat k8s/resources.yaml
-          kubectl apply -f k8s/resources.yaml
-
-      - name: Verify Deployment
-        run: |
-          echo "Checking deployment status..."
-          kubectl rollout status deployment/testopspoc
-          echo "Listing pods..."
-          kubectl get pods
-
-  # performance-testing:
-  #   name: Performance Testing
+  # containerize-and-publish-image:
+  #   name: Containerize and Publish Image
   #   runs-on: ubuntu-latest
-  #   needs: security-testing
+  #   outputs:
+  #     image-tag: ${{ steps.build-and-push.outputs.IMAGE_TAG }}
   #   steps:
   #     - name: Checkout repository
   #       uses: actions/checkout@v4
 
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v4
+  #     - name: Log in to DockerHub
+  #       uses: docker/login-action@v3
   #       with:
-  #         node-version: 18.x
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  #     - name: Use cached node_modules
-  #       run: npm ci --cache ~/.npm
+  #     - id: build-and-push
+  #       name: Build and Push Docker Image
+  #       run: |
+  #         IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/nowted-app:${{ github.sha }}
+  #         echo $IMAGE_TAG > image-tag.txt
+  #         docker build -t $IMAGE_TAG .
+  #         docker push $IMAGE_TAG
 
-  #     - name: Build application
-  #       run: npm run build
-
-  #     - name: Start server
-  #       run: npm run start &
-
-  #     - name: Wait for server to start
-  #       run: npx wait-on http://localhost:3000
-
-  #     - name: Run k6 tests
-  #       run: npm run performance
-
-  #     - name: Upload k6 performance reports
+  #     - name: Upload IMAGE_TAG file
   #       uses: actions/upload-artifact@v4
   #       with:
-  #         name: performance-testing-reports
-  #         path: performance-testing-reports
+  #         name: image-tag
+  #         path: image-tag.txt
+
+  # deployment:
+  #   name: Deploy to GKE Cluster
+  #   runs-on: ubuntu-latest
+  #   needs: containerize-and-publish-image
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+
+  #     - id: auth
+  #       name: Authenticate with Google Cloud
+  #       uses: google-github-actions/auth@v2
+  #       with:
+  #         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+  #     - name: Set up Google Cloud SDK
+  #       uses: google-github-actions/setup-gcloud@v2
+  #       with:
+  #         install_components: 'gke-gcloud-auth-plugin'
+
+  #     - name: Configure kubectl
+  #       run: |
+  #         gcloud container clusters get-credentials autopilot-cluster-1 --region europe-central2
+  #         kubectl config current-context
+
+  #     - name: Download IMAGE_TAG file
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: image-tag
+
+  #     - name: Apply Kubernetes manifests
+  #       run: |
+  #         IMAGE_TAG=$(cat image-tag.txt)
+  #         echo "Using image tag: $IMAGE_TAG"
+  #         sed -i "s|quiirex/nowted-app:latest|$IMAGE_TAG|g" k8s/resources.yaml
+  #         cat k8s/resources.yaml
+  #         kubectl apply -f k8s/resources.yaml
+
+  #     - name: Verify Deployment
+  #       run: |
+  #         echo "Checking deployment status..."
+  #         kubectl rollout status deployment/testopspoc
+  #         echo "Listing pods..."
+  #         kubectl get pods
+
+  performance-testing:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    # needs: deployment
+    services:
+      app:
+        image: quiirex/nowted-app:latest
+        ports:
+          - 3000:3000
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run k6 local test
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: __tests__/performance/test.js
+          flags: --vus 50 --duration 5s
+        env:
+          BASE_URL: 'http://app:3000'
+
+      - name: Upload k6 performance reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-testing-reports
+          path: performance-testing-reports
 
   # notifications:
   #   name: Notifications
