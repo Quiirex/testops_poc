@@ -272,6 +272,8 @@ jobs:
         with:
           server_address: smtp.gmail.com
           server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
           subject: 'CI/CD Pipeline Notification'
           body: 'The CI/CD pipeline has completed successfully. See the attached testing reports.'
           to: ${{ secrets.EMAIL_TO }}
