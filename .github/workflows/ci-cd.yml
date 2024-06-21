@@ -124,43 +124,10 @@ jobs:
             --run-description ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \
             -f "reports/junit-report.xml"
 
-  security-testing:
-    name: Security Testing
-    runs-on: ubuntu-latest
-    needs: e2e-testing
-    outputs:
-      full_scan_result: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
-    services:
-      app:
-        image: quiirex/nowted-app:latest
-        ports:
-          - 3000:3000
-    steps:
-      - name: Run ZAP full scan
-        id: full_scan
-        uses: zaproxy/action-full-scan@v0.10.0
-        with:
-          target: 'http://app:3000'
-
-      - name: Store security testing results
-        id: store_full_scan_result
-        run: |
-          mkdir -p full_scan_results
-          mv *.html full_scan_results/ || true
-          FULL_RESULT_FILE=$(find full_scan_results -name "*.html" -type f)
-          echo "::set-output name=full_scan_result::$FULL_RESULT_FILE"
-
-      - name: Upload security testing report
-        uses: actions/upload-artifact@v4
-        with:
-          name: security_testing_report
-          path: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
-          retention-days: 5
-
   performance-testing:
     name: Performance Testing
     runs-on: ubuntu-latest
-    needs: security-testing
+    needs: e2e-testing
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -194,7 +161,7 @@ jobs:
   containerize-and-publish-image:
     name: Containerize and Publish Image
     runs-on: ubuntu-latest
-    needs: [e2e-testing, security-testing, performance-testing]
+    needs: performance-testing
     outputs:
       image-tag: ${{ steps.build-and-push.outputs.IMAGE_TAG }}
     steps:
@@ -221,10 +188,43 @@ jobs:
           name: image-tag
           path: image-tag.txt
 
+  security-testing:
+    name: Security Testing
+    runs-on: ubuntu-latest
+    needs: containerize-and-publish-image
+    outputs:
+      full_scan_result: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
+    services:
+      app:
+        image: ${{ needs.containerize-and-publish-image.outputs.image-tag }}
+        ports:
+          - 3000:3000
+    steps:
+      - name: Run ZAP full scan
+        id: full_scan
+        uses: zaproxy/action-full-scan@v0.10.0
+        with:
+          target: 'http://app:3000'
+
+      - name: Store security testing results
+        id: store_full_scan_result
+        run: |
+          mkdir -p full_scan_results
+          mv *.html full_scan_results/ || true
+          FULL_RESULT_FILE=$(find full_scan_results -name "*.html" -type f)
+          echo "::set-output name=full_scan_result::$FULL_RESULT_FILE"
+
+      - name: Upload security testing report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security_testing_report
+          path: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
+          retention-days: 5
+
   deployment:
     name: Deploy to GKE Cluster
     runs-on: ubuntu-latest
-    needs: containerize-and-publish-image
+    needs: security-testing
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
