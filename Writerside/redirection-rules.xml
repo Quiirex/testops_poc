@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rules SYSTEM "https://resources.jetbrains.com/writerside/1.0/redirection-rules.dtd">
+<rules>
+    <!-- format is as follows
+    <rule id="<unique id>">
+        <accepts>page.html</accepts>
+    </rule>
+    -->
+    <rule id="7ffc7968">
+        <description>Created after removal of "Linting" from Help instance</description>
+        <accepts>Linting.html</accepts>
+    </rule>
+    <rule id="6ad409d0">
+        <description>Created after removal of "End-to-End (E2E) Testing" from Help instance</description>
+        <accepts>End-to-End-E2E-Testing.html</accepts>
+    </rule>
+    <rule id="5fc1a6d">
+        <description>Created after removal of "Performance Testing" from Help instance</description>
+        <accepts>Performance-Testing.html</accepts>
+    </rule>
+    <rule id="3093b01a">
+        <description>Created after removal of "Security Testing" from Help instance</description>
+        <accepts>Security-Testing.html</accepts>
+    </rule>
+    <rule id="10b8f594">
+        <description>Created after removal of "Testing Stages" from Help instance</description>
+        <accepts>Testing-Stages.html</accepts>
+    </rule>
+</rules>

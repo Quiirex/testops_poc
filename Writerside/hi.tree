@@ -4,7 +4,17 @@
 
 <instance-profile id="hi"
                  name="Help instance"
-                 start-page="starter-topic.md">
+                 start-page="TestOps-Proof-of-Concept.md">
 
-    <toc-element topic="starter-topic.md"/>
+    <toc-element topic="TestOps-Proof-of-Concept.md"/>
+    <toc-element topic="The-CI-CD-Pipeline.md">
+        <toc-element topic="Best-Practices.md"/>
+        <toc-element topic="Setup.md"/>
+        <toc-element topic="Linting.md"/>
+        <toc-element topic="End-to-End-Testing.md"/>
+        <toc-element topic="Performance-Testing.md"/>
+        <toc-element topic="Containerization-and-Docker-Image-Publishing.md"/>
+        <toc-element topic="Security-Testing.md"/>
+        <toc-element topic="Deployment.md"/>
+    </toc-element>
 </instance-profile>
