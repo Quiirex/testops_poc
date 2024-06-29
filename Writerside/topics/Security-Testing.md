@@ -6,7 +6,7 @@ The CI/CD job called **Security Testing** is run on the latest version of the Ub
 security-testing:
   name: Security Testing
   runs-on: ubuntu-latest
-  needs: e2e-testing
+  needs: containerize-and-publish-image
   outputs:
     full_scan_result: ${{ steps.store_full_scan_result.outputs.full_scan_result }}
   services:

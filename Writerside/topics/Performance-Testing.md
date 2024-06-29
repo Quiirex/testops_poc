@@ -8,7 +8,7 @@ The CI/CD job called **Performance Testing** is run on the latest version of the
 performance-testing:
   name: Performance Testing
   runs-on: ubuntu-latest
-  needs: security-testing
+  needs: e2e-testing
   steps:
     - name: Checkout repository
       uses: actions/checkout@v4

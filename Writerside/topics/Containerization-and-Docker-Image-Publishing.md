@@ -6,7 +6,7 @@ The CI/CD job called **Containerize and Publish Image** runs on the latest versi
 containerize-and-publish-image:
   name: Containerize and Publish Image
   runs-on: ubuntu-latest
-  needs: [e2e-testing, security-testing, performance-testing]
+  needs: performance-testing
   outputs:
     image-tag: ${{ steps.build-and-push.outputs.IMAGE_TAG }}
   steps:

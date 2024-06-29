@@ -6,7 +6,7 @@ The CI/CD job called **Deploy to GKE Cluster** runs on the latest version of Ubu
 deployment:
   name: Deploy to GKE Cluster
   runs-on: ubuntu-latest
-  needs: containerize-and-publish-image
+  needs: security-testing
   steps:
     - name: Checkout repository
       uses: actions/checkout@v4
