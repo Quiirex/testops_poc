@@ -15,6 +15,11 @@ In implementing the TestOps strategies, we established three levels of testing: 
 
 The pipeline is designed to be extensible, allowing for an unlimited number of additional levels and types of testing to be added should the need arise. It is also possible to extend the pipeline with quality thresholds that define the thresholds for the allowed passage of test steps.
 
+## The Architecture
+
+Below is the image of the proposed CI/CD Pipeline Architecture which includes TestOps strategies and tools.
+![Pipeline Architecture](Pipeline-Architecture.png)
+
 ## Pipeline Steps
 
 Our PoC CI/CD pipeline consists of several key steps that are executed whenever changes are introduced to the main repository branch or when a code merge request is opened on the main branch. The aim of these steps is to ensure high quality, performance and security of our application before its final deployment to the production environment.
