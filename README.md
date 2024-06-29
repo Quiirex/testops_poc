@@ -36,12 +36,7 @@ The CI/CD pipeline used in this PoC is designed to automate the processes of bui
    - Upload E2E Testing Report: Upload the generated test report.
    - Upload Results to TestRail: Integrate and upload test results to TestRail.
 
-4. Security Testing:
-
-   - Run ZAP Full Scan: Perform a full security scan using OWASP ZAP.
-   - Store and Upload Security Testing Results: Save and upload the security testing report.
-
-5. Performance Testing:
+4. Performance Testing:
 
    - Checkout Repository: Fetch the code.
    - Setup Node.js: Install the required Node.js version.
@@ -50,12 +45,17 @@ The CI/CD pipeline used in this PoC is designed to automate the processes of bui
    - Install and Run k6: Install k6 and run performance tests.
    - Upload Performance Report: Upload the performance testing report.
 
-6. Containerization and Image Publishing:
+5. Containerization and Image Publishing:
 
    - Checkout Repository: Fetch the code.
    - Log in to DockerHub: Authenticate with DockerHub.
    - Build and Push Docker Image: Build and push the Docker image to the repository.
    - Upload Image Tag: Upload the Docker image tag for deployment.
+  
+6. Security Testing:
+
+   - Run ZAP Full Scan: Perform a full security scan using OWASP ZAP.
+   - Store and Upload Security Testing Results: Save and upload the security testing report.
 
 7. Deployment:
    - Checkout Repository: Fetch the code.
