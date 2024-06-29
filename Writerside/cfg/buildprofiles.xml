@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <buildprofiles xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/build-profiles.xsd"
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
-    <variables></variables>
     <build-profile instance="hi">
         <variables>
+            <download-page>https://github.com/Quiirex/testops_poc</download-page>
+            <download-title>GitHub Repository</download-title>
+            <showDownloadButton>true</showDownloadButton>
+            <primary-color>iris</primary-color>
             <noindex-content>true</noindex-content>
         </variables>
     </build-profile>
-
+    <footer>
+        <copyright>Luka Mlinarič Fekonja, 2024</copyright>
+    </footer>
 </buildprofiles>
