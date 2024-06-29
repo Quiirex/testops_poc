@@ -17,6 +17,7 @@ env:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -40,6 +41,7 @@ jobs:
             artifacts/report.json
           retention-days: 7
   test:
+    name: Test
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -54,6 +56,7 @@ jobs:
         with:
           instance: ${{ env.INSTANCE }}
   deploy:
+    name: Deploy
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
