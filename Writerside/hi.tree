@@ -3,7 +3,7 @@
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
 
 <instance-profile id="hi"
-                 name="Help instance"
+                 name="TestOps PoC documentation"
                  start-page="TestOps-Proof-of-Concept.md">
 
     <toc-element topic="TestOps-Proof-of-Concept.md"/>

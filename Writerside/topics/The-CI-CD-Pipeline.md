@@ -18,7 +18,7 @@ The pipeline is designed to be extensible, allowing for an unlimited number of a
 ## The Architecture
 
 Below is the image of the proposed CI/CD Pipeline Architecture which includes TestOps strategies and tools.
-![Pipeline Architecture](Pipeline-Architecture.png)
+![Pipeline Architecture](Pipeline-Architecture.png) {width="550"}
 
 ## Pipeline Steps
 

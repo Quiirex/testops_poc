@@ -1,6 +1,6 @@
 # Best Practices
 
-The following good practices have been taken into account in the implementation of the CI/CD pipeline:
+The following best practices have been taken into account in the implementation of the CI/CD pipeline:
 - **Isolation of environments**: the use of containerisation ensures that all environments (development, testing, production) are consistent and isolated.
 - **Transparent documentation**: each step in the pipeline is clearly documented, making it easy for other team members to understand and adapt the process.
 - **Communication and reporting**: at the end of each pipeline run, we are informed of the result of the pipeline via email (this needs to be enabled in your GitHub account settings), allowing the development team to react in a timely manner.
